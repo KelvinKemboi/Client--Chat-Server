@@ -24,11 +24,14 @@ int main(){
 
     //accept connection
     while(true){
-        int client=accept(sock, nullprt, nullprt);
+        int client=accept(sock, nullptr, nullptr);
         cout<<"Client connected: "<<client<<endl;
-
         
+        char buffer[1024]={0};
+        recv(client, buffer, sizeof(buffer), 0); //recieve messages
 
+        string s(buffer);
+        cout<<"Buffer recieved: "<<s<<endl;
         close(client);
     }
 
