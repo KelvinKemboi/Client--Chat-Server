@@ -14,7 +14,7 @@ void eachClient(int client){
     if(bytes<=0){
         cerr<<"Error receiving message"<<endl;
         close(client);
-        continue;
+        break;
     }
 
     //terminate buffer and print string message
@@ -57,7 +57,6 @@ int main(){
         cout<<"Client connected: "<<client<<endl;
         thread t(eachClient, client);
         t.detach(); //have each convo run independantly while main thread is running
-        close(client);
     }
     close(sock);
     return 0;
