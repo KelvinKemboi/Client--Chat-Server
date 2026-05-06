@@ -2,6 +2,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <netinet/in.h>
+#include <string>
 using namespace std;
 
 int main(){
@@ -24,17 +25,32 @@ int main(){
 
     //accept connection
     while(true){
-        int client=accept(sock, nullptr, nullptr);
+        //create client socket for every connection
+        int client=accept(sock, nullptr, nullptr);  
+        if(client<0){
+            cerr<<"Accept failed."<<endl;
+            continue;
+        }
         cout<<"Client connected: "<<client<<endl;
         
         char buffer[1024]={0};
-        recv(client, buffer, sizeof(buffer), 0); //recieve messages
+        int bytes=recv(client, buffer, sizeof(buffer)-1, 0); //recieve raw byte messages
+        if(bytes<=0){
+            cerr<<"Error receiving message"<<endl;
+            close(client);
+            continue;
+        }
 
+        //terminate buffer and print string message
+        buffer[bytes]='\0'; //add end of string marker
         string s(buffer);
         cout<<"Buffer recieved: "<<s<<endl;
+
+        //response
+        string response="Server received: "+s;
+        send(client, response.c_str(), response.size(),0);
         close(client);
     }
-
-
+    close(sock);
     return 0;
 }
