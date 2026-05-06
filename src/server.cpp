@@ -32,23 +32,24 @@ int main(){
             continue;
         }
         cout<<"Client connected: "<<client<<endl;
-        
-        char buffer[1024]={0};
-        int bytes=recv(client, buffer, sizeof(buffer)-1, 0); //recieve raw byte messages
-        if(bytes<=0){
-            cerr<<"Error receiving message"<<endl;
-            close(client);
-            continue;
+        while(true){
+            char buffer[1024]={0};
+            int bytes=recv(client, buffer, sizeof(buffer)-1, 0); //recieve raw byte messages
+            if(bytes<=0){
+                cerr<<"Error receiving message"<<endl;
+                close(client);
+                continue;
+            }
+
+            //terminate buffer and print string message
+            buffer[bytes]='\0'; //add end of string marker
+            string s(buffer);
+            cout<<"Buffer recieved: "<<s<<endl;
+
+            //response
+            string response="Server received: "+s;
+            send(client, response.c_str(), response.size(),0);
         }
-
-        //terminate buffer and print string message
-        buffer[bytes]='\0'; //add end of string marker
-        string s(buffer);
-        cout<<"Buffer recieved: "<<s<<endl;
-
-        //response
-        string response="Server received: "+s;
-        send(client, response.c_str(), response.size(),0);
         close(client);
     }
     close(sock);
