@@ -5,17 +5,24 @@
 #include <string>
 #include <thread>
 #include <vector>
-#include m
+#include <mutex>
 using namespace std;
 
-vector<int> clients;
+vector<int> clients;//store clients
+mutex clients_mut; //guard clients
+
 //helper function to handle each client
 void eachClient(int client){
+    //register client
+    {
+        lock_guard<mutex> lock(clients_mut); //lock client
+        clients.push_back(client); //append client
+    }
     while(true){
         char buffer[1024]={0};
         int bytes=recv(client, buffer, sizeof(buffer)-1, 0); //recieve raw byte messages
         if(bytes<=0){
-            cerr<<"Error receiving message"<<endl;
+            cerr<<"Disconnected"<<endl;
             close(client);
             break;
         }
@@ -28,6 +35,11 @@ void eachClient(int client){
         //response
         string response="Server received: "+s;
         send(client, response.c_str(), response.size(),0);
+    }
+    //unregister client
+    {
+        lock_guard<mutex> lock(clients_mut);
+        clients.erase(remove(clients.begin(), clients.end(), client), clients.end()); //move non-client clients to front and erase end
     }
 }
 
