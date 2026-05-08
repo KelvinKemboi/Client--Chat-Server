@@ -6,10 +6,21 @@
 #include <thread>
 #include <vector>
 #include <mutex>
+#include <algorithm>
 using namespace std;
 
 vector<int> clients;//store clients
 mutex clients_mut; //guard clients
+
+//helper function to broadcast messages to other clients
+void broadcast(const string& message, int client){
+    lock_guard<mutex> lock(clients_mut);
+    for(int c:clients){
+        if(c!=client){
+            send(c, message.c_str(), message.size(), 0);
+        }
+    }
+}
 
 //helper function to handle each client
 void eachClient(int client){
@@ -33,8 +44,8 @@ void eachClient(int client){
         cout<<"Buffer recieved: "<<s<<endl;
 
         //response
-        string response="Server received: "+s;
-        send(client, response.c_str(), response.size(),0);
+        string response="Client "+to_string(client)+": "+s;
+        broadcast(response, client); //to other clients;
     }
     //unregister client
     {
