@@ -4,30 +4,34 @@
 #include <netinet/in.h>
 #include <string>
 #include <thread>
+#include <vector>
+#include m
 using namespace std;
 
+vector<int> clients;
 //helper function to handle each client
 void eachClient(int client){
     while(true){
-    char buffer[1024]={0};
-    int bytes=recv(client, buffer, sizeof(buffer)-1, 0); //recieve raw byte messages
-    if(bytes<=0){
-        cerr<<"Error receiving message"<<endl;
-        close(client);
-        break;
+        char buffer[1024]={0};
+        int bytes=recv(client, buffer, sizeof(buffer)-1, 0); //recieve raw byte messages
+        if(bytes<=0){
+            cerr<<"Error receiving message"<<endl;
+            close(client);
+            break;
+        }
+
+        //terminate buffer and print string message
+        buffer[bytes]='\0'; //add end of string marker
+        string s(buffer);
+        cout<<"Buffer recieved: "<<s<<endl;
+
+        //response
+        string response="Server received: "+s;
+        send(client, response.c_str(), response.size(),0);
     }
-
-    //terminate buffer and print string message
-    buffer[bytes]='\0'; //add end of string marker
-    string s(buffer);
-    cout<<"Buffer recieved: "<<s<<endl;
-
-    //response
-    string response="Server received: "+s;
-    send(client, response.c_str(), response.size(),0);
-}
 }
 
+//process
 int main(){
     //create socket
     int sock=socket(AF_INET, SOCK_STREAM, 0);

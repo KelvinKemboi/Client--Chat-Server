@@ -43,7 +43,7 @@ int main(){
         buffer[bytes]='\0';
         string s(buffer);
 
-        cout<<"Server says: "<<s<<endl;
+        cout<<s<<endl;
     }
 
     close(client_sock);
