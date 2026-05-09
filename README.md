@@ -24,8 +24,8 @@ A multi-client TCP chat application written in C++ using POSIX sockets. A centra
 ## Build
 
 ```bash
-g++ -std=c++17 server.cpp -o server
-g++ -std=c++17 client.cpp -o client
+g++ -std=c++20 server.cpp -o server
+g++ -std=c++20 client.cpp -o client
 ```
 
 ---
