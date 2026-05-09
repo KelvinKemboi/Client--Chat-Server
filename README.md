@@ -1,4 +1,4 @@
-# TCP Chat — Client & Server
+# TCP Chat - Client & Server
 
 A multi-client TCP chat application written in C++ using POSIX sockets. A central server accepts connections from multiple clients and broadcasts messages between them.
 
